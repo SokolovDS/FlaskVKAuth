@@ -1,0 +1,18 @@
+<html>
+
+<head>
+  <title>Friends List</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body>
+  <h1>Friends List</h1>
+  {{ result }}
+  {% for friend in friends %}
+  <div>
+    <a href="https://vk.com/id{{friend.id}}">{{ friend.first_name }} {{ friend.last_name }}</a>
+  </div>
+  {% endfor %}
+</body>
+
+</html>
