@@ -6,8 +6,9 @@
 </head>
 
 <body>
+  <h1>Authorized user</h1>
+  <a href="https://vk.com/id{{user.id}}">{{ user.first_name }} {{ user.last_name }}</a>
   <h1>Friends List</h1>
-  {{ result }}
   {% for friend in friends %}
   <div>
     <a href="https://vk.com/id{{friend.id}}">{{ friend.first_name }} {{ friend.last_name }}</a>

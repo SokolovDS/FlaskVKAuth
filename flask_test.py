@@ -12,65 +12,54 @@ print(sys.path)
 
 
 app = Flask(__name__)
-code = '1'
-VK_APP_ID = '7172984'
 
 
 @app.route('/')
 @app.route('/index')
 def index():
-    """
+    """ Render main page if not authorized
+        And redirect to page with list of friends if authorized
     """
     if not request.cookies.get('VKAuth'):
         url = '/login'
         return render_template("index.html", bttnredirect=url)
     else:
-        return redirect('/login')
+        return redirect('/friends_list')
 
 
 @app.route('/login/')
 def login():
-    """Redirect to /code with vk code"""
-    if not request.cookies.get('VKAuth'):
-        login_url = "https://oauth.vk.com/authorize?client_id={0}&scope=friends,offline&redirect_uri=http://0.0.0.0/code&response_type=code".format(
-            VK_APP_ID)
-        return redirect(login_url)
-    else:
-        return redirect('/friends_list')
+    """ VK Auth and redirect to /set_cookies with vk code """
+    login_url = vk_api.get_login_url()
+    return redirect(login_url)
 
 
-def set_cookies(access_token):
-    """Записывает куки, если их еще нет"""
-    if not request.cookies.get('VKAuth'):
-        res = make_response("Setting a cookie")
-        res.set_cookie('VKAuth', value="lol kek", max_age=60*60*24*30)
-
-        print("COOKIES ARE SET")
-    else:
-        print("THRERE ARE ALREADY COOKIES", request.cookies.get('VKAuth'))
-
-
-@app.route('/code/')
-def get_code():
+@app.route('/set_cookies')
+def set_cookies():
+    """ Get access token and set the cookie with it """
     global code
     code = request.args.get('code')
-    access_token = vk_api.get_access_token(code)
+    access_token, user_id = vk_api.get_access_token(code)
     print("GOT ACCESS TOKEN: ", access_token)
     print("ACCESS_TOKEN_TYPE: ", type(access_token))
+    print("GOT USER ID: ", user_id)
     res = redirect('/friends_list')
-    res.set_cookie('VKAuth', access_token, max_age=60*60*24*30)
+    res.set_cookie('VK_access_token', access_token, max_age=60*60*24*30)
+    res.set_cookie('VK_user_id', user_id, max_age=60*60*24*30)
     return res
 
 
 @app.route('/friends_list/')
 def friends_list():
-    access_token = request.cookies.get('VKAuth')
-    if access_token:
-        print("Successful login, ", access_token)
-    else:
-        print("Some Problem with cookies")
+    """ Get access_token from the cookie, get user info and friends list using
+        VK API and generate page with list of friends
+    """
+    access_token = request.cookies.get('VK_access_token')
+    user_id = request.cookies.get('VK_user_id')
 
     print("access_token: ", access_token)
-    success = vk_api.get_friends_list(access_token)
-    print(success)
-    return render_template("friends_list.html", result=success, friends=success)
+    user = vk_api.get_user_data(access_token, user_id)[0]
+    friends_list = vk_api.get_friends_list(access_token)
+    print(friends_list)
+    return render_template("friends_list.html", user_res=user, user=user,
+                           result=friends_list, friends=friends_list)
