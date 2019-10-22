@@ -2,7 +2,7 @@
 """
 import requests
 
-APP_URL = '0.0.0.0'
+APP_URL = 'sokolovds.pythonanywhere.com'
 VK_APP_ID = '7172984'
 
 
@@ -42,6 +42,5 @@ def get_friends_list(access_token):
         friends_ids_str += ","+str(i)
     print(friends_ids_str)
 
-    friends_amount = data['response']['count']
     friends_list = get_user_data(access_token, friends_ids_str)
     return friends_list

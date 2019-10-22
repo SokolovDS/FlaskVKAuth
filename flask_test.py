@@ -1,8 +1,7 @@
 """VKauth package
 """
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, redirect, request, make_response, session
-import requests
+from flask import Flask, render_template, redirect, request
 import vk_api
 
 import sys
@@ -20,7 +19,7 @@ def index():
     """ Render main page if not authorized
         And redirect to page with list of friends if authorized
     """
-    if not request.cookies.get('VKAuth'):
+    if not request.cookies.get('VK_access_token'):
         url = '/login'
         return render_template("index.html", bttnredirect=url)
     else:
@@ -63,3 +62,7 @@ def friends_list():
     print(friends_list)
     return render_template("friends_list.html", user_res=user, user=user,
                            result=friends_list, friends=friends_list)
+
+
+if __name__ == '__main__':
+    app.run()

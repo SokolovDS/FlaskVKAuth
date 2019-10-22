@@ -5,13 +5,10 @@
 </head>
 
 <body>
-  <h1>Hi!</h1>
-  <p class="buttond" style="text-align:left;">
-    <a href={{ bttnredirect }} target="_self" style="cursor: pointer;
-    font-size:14px;
-    text-decoration: none;
-    padding:4px 27px;">Авторизоваться</a>
-  </p>
+  <h1>Press button to authorize using VK</h1>
+  <button type="button" onclick="window.location.href='{{ bttnredirect }}';">
+    VK Authorization
+  </button>
 </body>
 
 </html>
