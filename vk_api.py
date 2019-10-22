@@ -12,8 +12,8 @@ def get_login_url():
 
 
 def get_access_token(code):
-    access_token_link = "https://oauth.vk.com/access_token?client_id=7172984&client_secret=Yz2vR5uLmcOGjJRyUg5H&redirect_uri=http://0.0.0.0/set_cookies&code={0}".format(
-        code)
+    access_token_link = "https://oauth.vk.com/access_token?client_id=7172984&client_secret=Yz2vR5uLmcOGjJRyUg5H&redirect_uri=http://{0}/set_cookies&code={1}".format(
+        APP_URL, code)
     print("code: ", code)
     data = requests.get(url=access_token_link).json()
     print(data)
