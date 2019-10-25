@@ -1,7 +1,7 @@
 """VKauth package
 """
 # -*- coding: utf-8 -*-
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, session
 import vk_api
 
 import sys
@@ -19,7 +19,7 @@ def index():
     """ Render main page if not authorized
         And redirect to page with list of friends if authorized
     """
-    if not request.cookies.get('VK_access_token'):
+    if 'access_token' not in session:
         url = '/login'
         return render_template("index.html", bttnredirect=url)
     else:
@@ -42,9 +42,11 @@ def set_cookies():
     print("GOT ACCESS TOKEN: ", access_token)
     print("ACCESS_TOKEN_TYPE: ", type(access_token))
     print("GOT USER ID: ", user_id)
+
+    session['access_token'] = access_token
+    session['user_id'] = user_id
+
     res = redirect('/friends_list')
-    res.set_cookie('VK_access_token', access_token, max_age=60*60*24*30)
-    res.set_cookie('VK_user_id', user_id, max_age=60*60*24*30)
     return res
 
 
@@ -53,8 +55,8 @@ def friends_list():
     """ Get access_token from the cookie, get user info and friends list using
         VK API and generate page with list of friends
     """
-    access_token = request.cookies.get('VK_access_token')
-    user_id = request.cookies.get('VK_user_id')
+    access_token = session['access_token']
+    user_id = session['user_id']
 
     print("access_token: ", access_token)
     user = vk_api.get_user_data(access_token, user_id)[0]
@@ -65,4 +67,5 @@ def friends_list():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.secret_key = 'super secret key'
+    app.run(debug=True, host="0.0.0.0", port="80")
